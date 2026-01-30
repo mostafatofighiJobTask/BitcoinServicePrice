@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Crypto Price Checker";
+}
+
+<h2>💰 Crypto Price Checker</h2>
+
+<div style="margin-top:20px">
+    <input id="symbol"
+           placeholder="مثلاً BTC"
+           style="padding:8px;width:200px" />
+
+    <button onclick="getPrice()"
+            style="padding:8px 15px">
+        Get Price
+    </button>
+</div>
+
+<pre id="result"
+     style="margin-top:20px;
+            background:#111;
+            color:#0f0;
+            padding:15px">
+</pre>
+
+<script>
+    async function getPrice() {
+        const symbol = document.getElementById("symbol").value;
+        const resultBox = document.getElementById("result");
+
+        if (!symbol) {
+            resultBox.innerText = "❌ Symbol is required";
+            return;
+        }
+
+        resultBox.innerText = "⏳ Loading...";
+
+        try {
+            const res = await fetch(`/api/crypto/price?symbol=${symbol}`);
+             console.log(`/api/crypto/price/${symbol}`);
+            if (!res.ok) throw new Error("API Error");
+
+            const data = await res.json();
+
+            let output = `Symbol: ${data.symbol}\n\n`;
+
+            for (const key in data.prices) {
+                output += `${key}: ${data.prices[key]}\n`;
+            }
+
+            resultBox.innerText = output;
+        }
+        catch (e) {
+            resultBox.innerText = "❌ Error fetching data";
+        }
+    }
+</script>
